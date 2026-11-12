@@ -1,0 +1,14 @@
+{
+  // Make this remote EC2 window visually distinct from local Kiro on the laptop
+  "window.title": "☁ EC2 us-west-2 — ${rootName}${separator}${activeEditorShort}",
+  "workbench.colorCustomizations": {
+    "titleBar.activeBackground": "#b35900",
+    "titleBar.activeForeground": "#ffffff",
+    "titleBar.inactiveBackground": "#7a3d00",
+    "titleBar.inactiveForeground": "#dddddd",
+    "statusBar.background": "#b35900",
+    "statusBar.foreground": "#ffffff",
+    "activityBar.background": "#4a2600"
+  },
+  "remote.autoForwardPortsFallback": 0
+}

@@ -1,0 +1,61 @@
+# my-nginx-app.yaml - deploys the Topic 4 web app to the EKS cluster (the manual way)
+#
+# This is a commented copy to show and explain to the students.
+# Topic 4 step 10 writes the same YAML to ~/environment/eksdemo/my-nginx-app.yaml, with
+# ${IMAGE} replaced by your ECR image, for example:
+#   123456789012.dkr.ecr.us-west-2.amazonaws.com/my-nginx-app:v1
+# Topic 4 step 11 then deploys it:  kubectl apply -f my-nginx-app.yaml
+#
+# It creates two objects, both in the default namespace:
+#   1) Deployment - runs 2 copies (pods) of the image from ECR, and replaces them if they fail
+#   2) Service    - type LoadBalancer: AWS creates a load balancer with a public address
+#
+# Removed by Topic 4 step 14 (optional) or Topic 11.
+
+# ---------------------------------------------------------------------------
+# 1) Deployment
+# ---------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-nginx-app
+spec:
+  replicas: 2                      # how many pods to run
+  selector:
+    matchLabels:
+      app: my-nginx-app            # the Deployment manages pods with this label
+  template:                        # the pod "recipe"
+    metadata:
+      labels:
+        app: my-nginx-app
+    spec:
+      containers:
+        - name: web
+          image: ${IMAGE}          # your image in ECR (filled in by step 10)
+          ports:
+            - containerPort: 80    # nginx listens on port 80
+          readinessProbe:          # send traffic to a pod only once the page answers
+            httpGet:
+              path: /
+              port: 80
+          resources:
+            requests:              # what the scheduler reserves on a node for each pod
+              cpu: 50m
+              memory: 32Mi
+            limits:
+              memory: 64Mi         # the pod is restarted if it uses more than this
+---
+# ---------------------------------------------------------------------------
+# 2) Service
+# ---------------------------------------------------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-nginx-app
+spec:
+  type: LoadBalancer               # AWS creates a load balancer with a public address
+  selector:
+    app: my-nginx-app              # send traffic to the pods with this label
+  ports:
+    - port: 80                     # port on the load balancer
+      targetPort: 80               # port on the pods

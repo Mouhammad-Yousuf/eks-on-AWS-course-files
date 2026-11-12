@@ -1,0 +1,7 @@
+# Non-secret settings shared by the web app: where to find the database.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongodb-configmap
+data:
+  database_url: mongodb-service
